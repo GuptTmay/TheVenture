@@ -10,6 +10,10 @@ app.get('/de', (req, res) => {
   res.send('Bro this is deployed!')
 })
 
+app.get('/up', (req, res) => {
+  res.send('Bro is this updated!!')
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
