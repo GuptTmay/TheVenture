@@ -1,19 +1,27 @@
-import express from 'express'
-const app = express()
-const port = 3000
+import express from "express";
+import authRouter from "./routes/AuthRouter";
+import { API_PREFIX } from "./config";
+import blogRouter from "./routes/BlogRouter";
+import cors from "cors";
+import auth from "./middlewares/auth";
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+const app = express();
+const port = 3000;
 
-app.get('/de', (req, res) => {
-  res.send('Bro this is deployed!')
-})
+app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+  })
+);
 
-app.get('/up', (req, res) => {
-  res.send('Bro is this updated!!')
-})
+app.get("/test", (req, res) => {
+  res.send("Hell World!");
+});
+
+app.use(`${API_PREFIX}/auth`, authRouter);
+app.use(`${API_PREFIX}/blog`, auth, blogRouter);
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.info(`Blogging app listening on port ${port}`);
+});
