@@ -1,11 +1,10 @@
-import { JWT } from './../config';
+import { JWT } from './config';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { JwtPayload } from '../types/auth';
+import { JwtPayload } from './types/auth';
 import { ZodType } from 'zod';
 
-
-function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export function auth(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.sendStatus(401); 
 
@@ -30,4 +29,3 @@ export const validate = (schema: ZodType) => (req: Request, res: Response, next:
   next(); 
 }
 
-export default authMiddleware;

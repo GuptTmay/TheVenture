@@ -3,7 +3,6 @@ import authRouter from "./routes/AuthRouter";
 import { API_PREFIX } from "./config";
 import blogRouter from "./routes/BlogRouter";
 import cors from "cors";
-import auth from "./middlewares/auth";
 
 const app = express();
 const port = 3000;
@@ -20,7 +19,7 @@ app.get("/test", (req, res) => {
 });
 
 app.use(`${API_PREFIX}/auth`, authRouter);
-app.use(`${API_PREFIX}/blog`, auth, blogRouter);
+app.use(`${API_PREFIX}/blog`, blogRouter);
 
 app.listen(port, () => {
   console.info(`Blogging app listening on port ${port}`);

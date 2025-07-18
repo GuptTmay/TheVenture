@@ -7,6 +7,14 @@ export const JWT = {
     TOKEN_EXP: 60 * 60 * 24 * 7, // 1 Week
 }
 
-export const db = {
-    url: "postgresql://tanmaygupta22003:jOTGE4BYApH1@ep-snowy-thunder-44957377-pooler.ap-southeast-1.aws.neon.tech/venture_i?sslmode=require&channel_binding=require"
+export const REDIS = {
+    USERNAME: process.env.REDIS_DB_USERNAME!,
+    PASSWORD: process.env.REDIS_DB_PASSWORD!,
+    HOST: process.env.REDIS_DB_HOST!,
+    PORT: parseInt(process.env.REDIS_DB_PORT!, 10),
+};
+
+export const BotMail = {
+    user: process.env.BOTMAIL_USER,  
+    pass: process.env.BOTMAIL_PASS 
 }

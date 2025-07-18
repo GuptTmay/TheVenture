@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -23,5 +23,14 @@ export default class UserModel {
       }
     })
     return data;
+  }
+
+  async updateUser(email: string, data: Partial<Pick<User, "firstname" | "lastname" | "password">>) {
+    await prisma.user.update({
+      where: {
+        email: email 
+      },
+      data: data
+    })
   }
 }
