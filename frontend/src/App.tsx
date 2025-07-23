@@ -7,11 +7,13 @@ import LogIn from './pages/LogIn';
 import Register from './pages/Register';
 import Feeds from './pages/Feeds';
 import { NoPage } from './pages/NoPage';
+import { Toaster } from 'sonner';
 
 function App() {
   return (
     <>
       <ThemeProvider>
+        <Toaster richColors position='top-center' theme='system' />
         <BrowserRouter>
           <Routes>
             <Route index element={<Hero />} />

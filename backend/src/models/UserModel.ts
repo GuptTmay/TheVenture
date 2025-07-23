@@ -4,9 +4,10 @@ const prisma = new PrismaClient();
 
 export default class UserModel {
 
-  async createUser(email: string, hashpass: string) {
+  async createUser(name: string, email: string, hashpass: string) {
     return await prisma.user.create({
       data: {
+        name: name,
         email: email,
         password: hashpass
       },
@@ -25,8 +26,8 @@ export default class UserModel {
     return data;
   }
 
-  async updateUser(email: string, data: Partial<Pick<User, "firstname" | "lastname" | "password">>) {
-    await prisma.user.update({
+  async updateUser(email: string, data: Partial<Pick<User, "name" | "password">>) {
+    return await prisma.user.update({
       where: {
         email: email 
       },

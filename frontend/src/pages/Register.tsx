@@ -2,6 +2,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
+
+import {
   Card,
   CardContent,
   CardDescription,
@@ -20,24 +27,94 @@ import {
   Eye,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '@/lib/api';
+import { registerUser, sendOtp, verifyOtp } from '@/lib/api';
+import { Status, toastHandler } from '@/lib/helper';
+import { toast } from 'sonner';
 
 const Register = () => {
+  const RegisterStages = {
+    EMAIL: 'email',
+    OTP: 'otp',
+    INFO: 'info',
+  };
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [hidePass, setHidePass] = useState(true);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [registerStages, setRegisterStages] = useState(RegisterStages.EMAIL);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setTimeout(() => setLoading(false), 1500);
 
-    const data = await registerUser(name, email, password);
-    sessionStorage.setItem("token", data.token);
-    alert(data.message);
+    try {
+      const res = await registerUser(name, password);
+      const data = await res.json();
+      toastHandler(data.status, data.message);
+
+      if (res.ok) {
+        sessionStorage.setItem('token', data.token);
+        navigate('/');
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSendingOTP = async (
+    e: React.FormEvent | React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const toastId = toast.loading('Sending OTP');
+    try {
+      const res = await sendOtp(email);
+      const data = await res.json();
+      toast.dismiss(toastId);
+      toastHandler(data.status, data.message);
+
+      if (res.ok) {
+        setRegisterStages(RegisterStages.OTP);
+        setOtp('');
+      }
+    } catch (err) {
+      console.log(err);
+      toastHandler(Status.ERROR, 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const toastId = toast.loading('Verifing OTP');
+    try {
+      const res = await verifyOtp(email, otp);
+      const data = await res.json();
+      toast.dismiss(toastId);
+      toastHandler(data.status, data.message);
+
+      if (res.ok) {
+        sessionStorage.setItem('token', data.token);
+        setRegisterStages(RegisterStages.INFO);
+        setPassword('');
+      }
+    } catch (err) {
+      console.log(err);
+      toastHandler(Status.ERROR, 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handlePasswordVisiblity = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -84,96 +161,197 @@ const Register = () => {
         transition={{ duration: 0.5 }}
       >
         <Card className="border-border/40 bg-background/80 w-full max-w-sm border shadow-md backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-center text-xl font-medium tracking-tight">
-              Create Your Account
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Name */}
-              <div className="group relative space-y-1">
-                <Label htmlFor="name">Name</Label>
-                <div className="relative">
-                  <UserIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Raven Blackwood"
-                    className="pl-10"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </div>
-              </div>
+          {registerStages === RegisterStages.EMAIL && (
+            <>
+              <CardHeader>
+                <CardTitle className="text-center text-xl font-medium tracking-tight">
+                  Create Your Account
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSendingOTP} className="space-y-5">
+                  {/* Email */}
+                  <div className="group relative space-y-1">
+                    <Label htmlFor="email">Email</Label>
+                    <div className="relative">
+                      <MailIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                      <Input
+                        autoComplete="off"
+                        id="email"
+                        type="email"
+                        placeholder="you@example.com"
+                        className="pl-10"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                  </div>
 
-              {/* Email */}
-              <div className="group relative space-y-1">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <MailIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="you@example.com"
-                    className="pl-10"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div className="group relative space-y-1">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <LockIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
-                  <Input
-                    id="password"
-                    type={hidePass ? 'password' : 'text'}
-                    placeholder="••••••••"
-                    className="px-10"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <button
-                    onMouseDown={handlePasswordVisiblity}
-                    onMouseUp={handlePasswordVisiblity}
-                    className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2"
+                  <Button
+                    type="submit"
+                    className="w-full font-semibold"
+                    disabled={loading}
                   >
-                    {hidePass ? (
-                      <EyeClosed className="size-4" />
-                    ) : (
-                      <Eye className="size-4" />
-                    )}
-                  </button>
-                </div>
-              </div>
+                    {loading ? 'Sending OTP...' : 'Submit'}
+                  </Button>
+                </form>
+              </CardContent>
+              <CardFooter>
+                <CardDescription>
+                  Already a Venturer?
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => navigate('/login')}
+                  >
+                    Log In
+                  </Button>
+                </CardDescription>
+              </CardFooter>
+            </>
+          )}
 
-              <Button
-                type="submit"
-                className="w-full font-semibold"
-                disabled={loading}
-              >
-                {loading ? 'Creating...' : 'Join Now'}
-              </Button>
-            </form>
-          </CardContent>
-          <CardFooter>
-            <CardDescription>
-              Already a Venturer?
-              <Button
-                variant="link"
-                size="sm"
-                onClick={() => navigate('/login')}
-              >
-                Log In
-              </Button>
-            </CardDescription>
-          </CardFooter>
+          {registerStages === RegisterStages.OTP && (
+            <>
+              <CardHeader>
+                <CardTitle className="text-center text-xl font-medium tracking-tight">
+                  Verifing Your Email
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col">
+                <form onSubmit={handleVerifyOTP} className="space-y-5">
+                  {/* OTP  */}
+                  <div className="group relative space-y-1 place-self-center">
+                    <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+                      <InputOTPGroup>
+                        {[...Array(3)].map((_, i) => (
+                          <InputOTPSlot key={i} index={i} />
+                        ))}
+                        <InputOTPSeparator />
+                        {[...Array(3)].map((_, i) => (
+                          <InputOTPSlot key={i + 3} index={i + 3} />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </div>
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    className="w-full font-semibold"
+                    disabled={loading}
+                  >
+                    {loading ? 'Verifing ...' : 'Verify'}
+                  </Button>
+                </form>
+              </CardContent>
+              <CardFooter className="flex flex-col items-start">
+                <CardDescription>OTP Sent to {email}</CardDescription>
+                <CardDescription>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="pl-0"
+                    onClick={handleSendingOTP}
+                  >
+                    Resend OTP
+                  </Button>
+                </CardDescription>
+                <CardDescription>
+                  <Button
+                    variant="link"
+                    size="sm"
+                    className="pl-0"
+                    onClick={() => {
+                      setRegisterStages(RegisterStages.EMAIL);
+                    }}
+                  >
+                    Go Back
+                  </Button>
+                </CardDescription>
+              </CardFooter>
+            </>
+          )}
+
+          {registerStages === RegisterStages.INFO && (
+            <>
+              <CardHeader>
+                <CardTitle className="text-center text-xl font-medium tracking-tight">
+                  Enter Your Info
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  {/* Name */}
+                  <div className="group relative space-y-1">
+                    <Label htmlFor="name">Name</Label>
+                    <div className="relative">
+                      <UserIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                      <Input
+                        autoComplete="off"
+                        id="name"
+                        type="text"
+                        placeholder="Raven Blackwood"
+                        className="pl-10"
+                        required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div className="group relative space-y-1">
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                      <LockIcon className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                      <Input
+                        id="password"
+                        type={hidePass ? 'password' : 'text'}
+                        placeholder="Password"
+                        className="px-10"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <button
+                        onMouseDown={handlePasswordVisiblity}
+                        onMouseUp={handlePasswordVisiblity}
+                        className="text-muted-foreground absolute top-1/2 right-3 -translate-y-1/2"
+                      >
+                        {hidePass ? (
+                          <EyeClosed className="size-4" />
+                        ) : (
+                          <Eye className="size-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full font-semibold"
+                    disabled={loading}
+                  >
+                    {loading ? 'Creating...' : 'Join Now'}
+                  </Button>
+                </form>
+              </CardContent>
+              <CardFooter>
+                <CardDescription>
+                  Already a Venturer?
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => navigate('/login')}
+                  >
+                    Log In
+                  </Button>
+                </CardDescription>
+              </CardFooter>
+            </>
+          )}
         </Card>
       </motion.div>
     </div>

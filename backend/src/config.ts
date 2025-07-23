@@ -1,6 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 export const port = 3000;
 export const API_PREFIX = "/api/v1";
 export const salt_rounds = 10; 
+export const FRONTEND_URL = process.env.FRONTEND_URL;
 
 export const JWT = {
     SECRET_KEY: "shhhhhhhhhhhh!",

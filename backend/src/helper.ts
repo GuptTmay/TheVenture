@@ -1,10 +1,8 @@
 import { BotMail } from "./config";
-import redisClient from "./redisClient";
 import nodemailer from "nodemailer";
 
 export async function sendOtp(email: string) {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-  await redisClient.set(`otp:${email}`, otp, { EX: 300 });
 
   const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -15,15 +13,16 @@ export async function sendOtp(email: string) {
   });
 
   await transporter.sendMail({
+    from: `"The Venture" <${BotMail.user}>`,
     to: email,
-    subject: "The Venture OTP",
+    subject: "Verification OTP",
     text: `Your OTP is: ${otp}`,
     html: `
     <div style="font-family: Arial, sans-serif; padding: 10px;">
       <h2>Hello, User</h2>
       <p>Your OTP is:</p>
       <h1 style="color: #4CAF50;">${otp}</h1>
-      <p>This OTP is valid for 5 minutes.</p>
+      <p>This OTP is valid for 30 Seconds.</p>
     </div>
   `,
   });
@@ -31,12 +30,10 @@ export async function sendOtp(email: string) {
   return otp;
 }
 
-export async function verifyOtp(email: string, otp: string) {
-  const storedOtp = await redisClient.get(`otp:${email}`);
-  return storedOtp === otp;
-}
-
-export async function setEmailVerified(email: string) {
-  await redisClient.set(`verify:${email}`, "yes", { EX: 300 });
-}
-
+export const Status = {
+  SUCCESS: "success",
+  ERROR: "error",
+  WARNING: "warning",
+  INFO: "info",
+  LOADING: "loading",
+};

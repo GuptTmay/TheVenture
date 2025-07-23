@@ -1,6 +1,6 @@
 import express from "express";
 import authRouter from "./routes/AuthRouter";
-import { API_PREFIX } from "./config";
+import { API_PREFIX, FRONTEND_URL } from "./config";
 import blogRouter from "./routes/BlogRouter";
 import cors from "cors";
 
@@ -10,7 +10,8 @@ const port = 3000;
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: FRONTEND_URL,
+    // origin: "http://localhost:5173",
   })
 );
 
