@@ -156,16 +156,19 @@ export default class AuthController {
         .json({ message: "Invalid/Incorrect OTP", status: Status.ERROR });
     }
 
+    /*
+      # Removed in favor of making compatible for register route
     const userData = await userModel.checkUser(email);
-
+    
     if (!userData) {
       return res.status(404).json({
         message: "User Does't exist! Register Please",
         status: Status.ERROR,
       });
     }
-
-    const token = jwt.sign({ email: userData.email }, JWT.SECRET_KEY, {
+    */ 
+    
+    const token = jwt.sign({ email: email }, JWT.SECRET_KEY, {
       expiresIn: 30,
     });
 
