@@ -37,8 +37,7 @@ export const validate =
 
     if (!result.success) {
       const formatted = result.error.issues.map((issue) => {
-        const path = issue.path.join(".") || "Field";
-        return `${path}: ${issue.message}`;
+        return issue.message;
       });
 
       return res.status(400).json({

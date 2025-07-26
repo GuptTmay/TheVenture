@@ -3,6 +3,7 @@ import authRouter from "./routes/AuthRouter";
 import { API_PREFIX, FRONTEND_URL } from "./config";
 import blogRouter from "./routes/BlogRouter";
 import cors from "cors";
+import userRouter from "./routes/UserRouter";
 
 const app = express();
 const port = 3000;
@@ -11,7 +12,6 @@ app.use(express.json());
 app.use(
   cors({
     origin: FRONTEND_URL,
-    // origin: "http://localhost:5173",
   })
 );
 
@@ -20,7 +20,8 @@ app.get("/test", (req, res) => {
 });
 
 app.use(`${API_PREFIX}/auth`, authRouter);
-app.use(`${API_PREFIX}/blog`, blogRouter);
+app.use(`${API_PREFIX}/feed`, blogRouter);
+app.use(`${API_PREFIX}/user`, userRouter);
 
 app.listen(port, () => {
   console.info(`Blogging app listening on port ${port}`);

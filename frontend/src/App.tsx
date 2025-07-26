@@ -13,7 +13,7 @@ function App() {
   return (
     <>
       <ThemeProvider>
-        <Toaster richColors position='top-center' theme='system' />
+        <Toaster richColors position="top-center" theme="system" />
         <BrowserRouter>
           <Routes>
             <Route index element={<Hero />} />
