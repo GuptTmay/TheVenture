@@ -184,6 +184,11 @@ export default class AuthController {
         password: hashpass,
       });
 
+      if (!userData)
+        res
+          .status(404)
+          .json({ message: "User Not Found!!", status: Status.ERROR });
+
       return res
         .status(201)
         .json({ message: "Password Updated", status: Status.SUCCESS });

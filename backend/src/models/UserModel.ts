@@ -17,9 +17,9 @@ export default class UserModel {
   }
 
   async checkUser(email: string) {
-    const data = await prisma.user.findFirst({
+    const data = await prisma.user.findUnique({
       where: {
-        email: email,
+        email,
       },
     });
     return data;
@@ -29,6 +29,9 @@ export default class UserModel {
     email: string,
     data: Partial<Pick<User, "name" | "password">>
   ) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return null;
+
     return await prisma.user.update({
       where: {
         email: email,
@@ -36,5 +39,4 @@ export default class UserModel {
       data: data,
     });
   }
-
 }
