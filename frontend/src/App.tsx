@@ -16,10 +16,11 @@ function App() {
         <Toaster richColors position="top-center" theme="system" />
         <BrowserRouter>
           <Routes>
-            <Route index element={<Hero />} />
             <Route path="/" element={<Layout />}>
+              <Route index element={<Hero />} />
               <Route path="feeds" element={<Feeds />} />
             </Route>
+
             <Route path="login" element={<LogIn />} />
             <Route path="register" element={<Register />} />
             <Route path="*" element={<NoPage />} />
