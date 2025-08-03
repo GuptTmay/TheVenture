@@ -30,6 +30,7 @@ import { useNavigate } from 'react-router-dom';
 import { registerUser, sendOtp, verifyOtp } from '@/lib/api';
 import { Status, toastHandler } from '@/lib/helper';
 import { toast } from 'sonner';
+import { cn } from '@/lib/utils';
 
 const Register = () => {
   const RegisterStages = {
@@ -59,7 +60,7 @@ const Register = () => {
 
       if (res.ok) {
         sessionStorage.setItem('token', data.token);
-        navigate('/');
+        navigate('/feeds');
       }
     } catch (err) {
       console.log(err);
@@ -129,6 +130,17 @@ const Register = () => {
         <div className="bg-primary/10 animate-pulse-slow absolute -top-40 -left-20 h-96 w-96 rounded-full blur-3xl" />
         <div className="animate-pulse-slow absolute right-0 bottom-10 h-72 w-72 rounded-full bg-purple-400/10 blur-2xl" />
       </div>
+
+      {/* Dot Background */}
+      <div
+        className={cn(
+          'absolute inset-0',
+          '[background-size:20px_20px]',
+          '[background-image:radial-gradient(#d4d4d4_1px,transparent_1px)]',
+          'dark:[background-image:radial-gradient(#404040_1px,transparent_1px)]'
+        )}
+      />
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-white [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)] dark:bg-black"></div>
 
       {/* Left Section with Branding */}
       <motion.div

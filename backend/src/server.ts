@@ -21,7 +21,7 @@ app.get("/test", (req, res) => {
 });
 
 app.use(`${API_PREFIX}/auth`, authRouter);
-app.use(`${API_PREFIX}/feed`, blogRouter);
+app.use(`${API_PREFIX}/feeds`, blogRouter);
 app.use(`${API_PREFIX}/user`, userRouter);
 
 app.listen(port, () => {

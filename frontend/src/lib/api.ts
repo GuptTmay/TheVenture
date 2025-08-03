@@ -1,9 +1,6 @@
 const BASE_URL = import.meta.env.VITE_base_url;
 
-export const registerUser = async (
-  name: string,
-  password: string
-) => {
+export const registerUser = async (name: string, password: string) => {
   const token = sessionStorage.getItem('token');
 
   return await fetch(`${BASE_URL}/auth/register`, {
@@ -50,5 +47,100 @@ export const changePassword = async (password: string) => {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ password: password }),
+  });
+};
+
+export const getAllBlogs = async () => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const getBlog = async (id: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/blog/${id}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const createBlog = async (title: string, content: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/blog`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ title: title, content: content }),
+  });
+};
+
+export const createAiBlog = async ({ topic }: { topic: string }) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/blog/ai`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ topic: topic }),
+  });
+};
+
+export const getBlogVotes = async (blogId: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/blog/${blogId}/votes`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const checkIfVoted = async (blogId: string) => {
+  const token = sessionStorage.getItem('token');
+  return await fetch(`${BASE_URL}/feeds/vote/${blogId}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const addBlogVote = async (blogId: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/vote`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ blogId: blogId }),
+  });
+};
+
+export const removeBlogVote = async (blogId: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/vote`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ blogId: blogId }),
   });
 };

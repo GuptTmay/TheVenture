@@ -56,3 +56,7 @@ export const updateBlogSchema = z.object({
     .max(5000, "Content must be at most 5000 characters")
     .optional(),
 });
+
+export const createAiBlogSchema = z.object({
+  topic: z.string().max(200, "Title should not more that 200 words").nonempty("Topic can't be empty!")
+})

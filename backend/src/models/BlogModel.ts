@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
+import { withAccelerate } from "@prisma/extension-accelerate";
+import { includes } from "zod";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient().$extends(withAccelerate());
 
 export default class BlogModel {
   async getBlogs() {
@@ -19,19 +21,21 @@ export default class BlogModel {
           },
         },
       },
+      cacheStrategy: { ttl: 60, swr: 30 },
     });
   }
 
   async getBlog(blogId: string) {
-    return await prisma.blog.findFirst({
-      where: {
-        id: blogId,
-      },
-      include: {
+    return await prisma.blog.findUnique({
+      where: { id: blogId },
+      select: {
+        title: true,
+        content: true,
+        updatedAt: true,
         author: {
           select: {
+            id: true,
             name: true,
-            email: true,
           },
         },
       },

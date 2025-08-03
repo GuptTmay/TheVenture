@@ -12,6 +12,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 model User {
@@ -20,14 +21,37 @@ model User {
   email    String  @unique @db.VarChar(30)
   password String
   blog     Blog[]
+  votes    Vote[]  
+  comments Comment[]
 }
 
 model Blog {
   id        String   @id @default(uuid())
-  title     String   @db.VarChar(200)
+  title     String   @db.VarChar(150)
   content   String   @db.VarChar(5000)
-  author    User     @relation(fields: [authorId], references: [id])
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   authorId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  votes Vote[]
+  comments Comment[]
 }
+
+model Vote {
+  id    String  @id @default(uuid()) 
+  user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+  blogId String
+}
+
+model Comment {
+ id String @id @default(uuid())
+ content String @db.Text
+ user User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId String
+ blog Blog @relation(fields: [blogId], references: [id], onDelete: Cascade)
+ blogId String
+ createdAt DateTime @default(now())
+}
+

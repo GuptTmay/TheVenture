@@ -4,6 +4,9 @@ import { Outlet } from "react-router-dom"
 const Layout = () => {
   return (
     <div>Layout
+      <nav>
+        
+      </nav>
       <ModeToggle />
       <Outlet/>
     </div>
