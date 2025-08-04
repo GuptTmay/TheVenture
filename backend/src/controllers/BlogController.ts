@@ -184,7 +184,6 @@ export default class BlogController {
     try {
       const userId = req.user.id;
       const blogId = req.body.blogId;
-      console.log(blogId);
 
       const hasVoted = await voteModel.checkIfVoted(userId, blogId);
       if (hasVoted)

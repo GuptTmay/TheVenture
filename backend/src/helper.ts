@@ -82,7 +82,7 @@ export async function getAiBlog(topic: string): Promise<BlogContent | null> {
     }
 
     const parsed = JSON.parse(response.text);
-    console.log(parsed); 
+    // console.log(parsed); 
     // Validate response structure
     if (!parsed.title || !parsed.content) {
       throw new Error('Invalid response structure from AI service');
