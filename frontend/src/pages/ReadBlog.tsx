@@ -35,7 +35,6 @@ type BlogData = {
   author: { name: string; id: string };
   updatedAt: string;
   readingTime?: number;
-  tags?: string[];
 };
 
 type LoadingState = 'loading' | 'success' | 'error';
@@ -294,19 +293,6 @@ const ReadBlog = () => {
                   <h1 className="from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
                     {blog.title}
                   </h1>
-
-                  {blog.tags && blog.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {blog.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="bg-primary/10 text-primary border-primary/20 inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium"
-                        >
-                          #{tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </header>
 
                 {/*  Content */}
@@ -391,7 +377,7 @@ const ReadBlog = () => {
                         disabled={commentLoading}
                         onChange={(e) => setCommentContent(e.target.value)}
                       />
-                      <Button type="submit" size="sm">
+                      <Button type="submit" disabled={commentLoading}  size="sm">
                         Post
                       </Button>
                     </form>

@@ -66,6 +66,10 @@ export default class BlogModel {
         authorId: authorId,
       },
       data: toUpdateData,
+      select: {
+        title: true,
+        content: true,
+      },
     });
   }
 
@@ -85,6 +89,18 @@ export default class BlogModel {
       },
       orderBy: {
         updatedAt: "desc",
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        updatedAt: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }

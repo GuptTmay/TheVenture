@@ -32,6 +32,18 @@ export default class BlogController {
     }
   }
 
+  static async getUserBlogs(req: Request, res: Response) {
+    try {
+      const userId = req.user.id;
+      const blogs = await blogModel.getUserBlogs(userId);
+      return res.status(200).json({ blogs: blogs });
+    } catch (error) {
+      res
+        .status(500)
+        .json({ message: "Something Went Wrong!", status: Status.ERROR });
+    }
+  }
+
   static async createBlog(req: Request, res: Response) {
     try {
       const title = req.body.title;

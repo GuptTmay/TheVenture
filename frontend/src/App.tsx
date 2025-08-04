@@ -11,6 +11,7 @@ import CreateBlog from './pages/CreateBlog';
 import ReadBlog from './pages/ReadBlog';
 import AiBlog from './pages/AiBlog';
 import { UserBlog } from './pages/UserBlog';
+import EditBlog from './pages/EditBlog';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="create" element={<CreateBlog />} />
               <Route path="ai" element={<AiBlog />} />
               <Route path="user" element={<UserBlog />} />
+              <Route path="edit/:id" element={<EditBlog />} />
             </Route>
 
             <Route path="login" element={<LogIn />} />

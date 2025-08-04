@@ -9,6 +9,7 @@ blogRouter.use(auth);
 
 blogRouter.get("/", BlogController.getAllBlogs);
 blogRouter.get("/blog/:blogId", BlogController.getBlog);
+blogRouter.get("/user/blogs", BlogController.getUserBlogs);
 blogRouter.post("/blog", validate(createBlogSchema), BlogController.createBlog);
 blogRouter.patch("/blog/:blogId", validate(updateBlogSchema), BlogController.updateBlog);
 blogRouter.delete("/blog/:blogId", BlogController.deleteBlog);

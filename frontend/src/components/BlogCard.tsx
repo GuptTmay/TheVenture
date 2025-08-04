@@ -1,10 +1,13 @@
 import Markdown from 'react-markdown';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Card, CardContent, CardHeader } from './ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from './ui/card';
 import { useNavigate } from 'react-router-dom';
-import { ageFinder } from '@/lib/helper';
-import { useEffect, useState } from 'react';
-import { getBlogVotes } from '@/lib/api';
+import { ageFinder, Status, toastHandler } from '@/lib/helper';
+import React, { useEffect, useState } from 'react';
+import { deleteBlog, getBlogVotes } from '@/lib/api';
+import { Button } from './ui/button';
+import { Edit, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 type BlogCardProps = {
   blogId: string;
@@ -13,6 +16,8 @@ type BlogCardProps = {
   authorName: string;
   authorId: string;
   updatedAt: string;
+  isUserBlog?: boolean;
+  fetchData?: () => Promise<void>;
 };
 
 const BlogCard = ({
@@ -22,6 +27,8 @@ const BlogCard = ({
   authorName,
   authorId,
   updatedAt,
+  isUserBlog = false,
+  fetchData = () => Promise.resolve(),
 }: BlogCardProps) => {
   const navigate = useNavigate();
   const [votes, setVotes] = useState<number | null>(null);
@@ -39,6 +46,30 @@ const BlogCard = ({
 
     fetchVotes();
   }, [blogId]);
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const toastId = toast.loading('Deleteing blog...');
+    try {
+      const res = await deleteBlog(blogId);
+      const data = await res.json();
+
+      toastHandler(data.status, data.message);
+      if (res.ok) {
+        await fetchData();
+      }
+    } catch (error) {
+      toastHandler(Status.ERROR, 'Something went wrong!');
+      console.error(error);
+    } finally {
+      toast.dismiss(toastId);
+    }
+  };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/blog/edit/${blogId}`);
+  };
 
   return (
     <div
@@ -73,11 +104,36 @@ const BlogCard = ({
               {content}
             </Markdown>
           </div>
+        </CardContent>
 
+        <CardFooter className="flex items-center justify-between">
           <div className="text-muted-foreground pt-2 text-sm">
             🗳️ {votes ?? '...'} votes • {ageFinder(updatedAt)}
           </div>
-        </CardContent>
+
+          {isUserBlog && (
+            <div className="flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleEdit}
+                className="hover:bg-primary/10 hover:text-primary h-7 px-2 text-xs"
+              >
+                <Edit className="mr-1 h-3 w-3" />
+                Edit
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDelete}
+                className="h-7 px-2 text-xs hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20"
+              >
+                <Trash2 className="mr-1 h-3 w-3" />
+                Delete
+              </Button>
+            </div>
+          )}
+        </CardFooter>
       </Card>
     </div>
   );

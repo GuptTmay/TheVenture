@@ -44,7 +44,10 @@ const AiBlog = () => {
 
       toast.dismiss(toastId);
       toastHandler(data.status, data.message);
-      if (res.ok) navigate('/feeds');
+      if (res.ok) {
+        navigate('/feeds');
+        // window.location.href = '/feeds';
+      }
     } catch (error) {
       console.log(error);
       toastHandler(Status.ERROR, 'Something went wrong');

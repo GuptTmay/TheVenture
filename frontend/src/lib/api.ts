@@ -72,6 +72,17 @@ export const getBlog = async (id: string) => {
   });
 };
 
+export const getUserBlogs = async () => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/user/blogs`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
 export const createBlog = async (title: string, content: string) => {
   const token = sessionStorage.getItem('token');
 
@@ -82,6 +93,30 @@ export const createBlog = async (title: string, content: string) => {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ title: title, content: content }),
+  });
+};
+
+export const editBlog = async (id: string, title: string, content: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/blog/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ title: title, content: content }),
+  });
+};
+
+export const deleteBlog = async (id: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/blog/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 };
 

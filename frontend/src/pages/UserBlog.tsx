@@ -3,6 +3,7 @@ import BlogCardSkeleton from '@/components/BlogCardSkeleton';
 import Logo from '@/components/Logo';
 import { Button } from '@/components/ui/button';
 import UserAcc from '@/components/UserAcc';
+import { getUserBlogs } from '@/lib/api';
 import { Status, toastHandler, type BlogType } from '@/lib/helper';
 import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -13,29 +14,30 @@ export const UserBlog = () => {
   const [loading, setLoading] = useState(false);
   const [blogs, setBlogs] = useState<BlogType[] | null>(null);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
-        const data = await getAllBlogs();
-        const res = await data.json();
-
-        if (!res.blogs) {
-          toastHandler(res.status, res.message);
-        } else {
-          setBlogs(res.blogs);
-        }
-      } catch (error) {
-        toastHandler(Status.ERROR, 'Something went wrong!');
-        console.error(error);
-        navigate('/feeds');
-      } finally {
-        setLoading(false);
+  async function fetchData() {
+    try {
+      setLoading(true);
+      const data = await getUserBlogs();
+      const res = await data.json();
+      console.log(res);
+      if (!res.blogs) {
+        toastHandler(res.status, res.message);
+      } else {
+        setBlogs(res.blogs);
       }
+    } catch (error) {
+      toastHandler(Status.ERROR, 'Something went wrong!');
+      console.error(error);
+      navigate('/feeds');
+    } finally {
+      setLoading(false);
     }
-
+  }
+  useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
+
   return (
     <div className="from-background to-muted/20 min-h-screen bg-gradient-to-br">
       <nav className="bg-background/80 sticky top-0 z-10 flex items-center justify-between border-b px-4 py-4 backdrop-blur-md">
@@ -58,7 +60,7 @@ export const UserBlog = () => {
 
       <main>
         {/* Blog Feed */}
-        <div className="flex w-full flex-col gap-6 sm:w-2/3">
+        <div className="flex w-full flex-col gap-6 p-6 sm:w-2/3">
           {!loading && (!blogs || blogs.length === 0) && (
             <div className="text-muted-foreground text-center">
               No Blogs Found!
@@ -79,9 +81,11 @@ export const UserBlog = () => {
                   ? blog.content
                   : blog.content.substring(0, 150) + '...'
               }
-              authorName={blog.author.name || 'User'}
+              authorName={blog.author.name ?? 'User'}
               authorId={blog.author.id}
               updatedAt={blog.updatedAt}
+              isUserBlog={true}
+              fetchData={fetchData}
             />
           ))}
 

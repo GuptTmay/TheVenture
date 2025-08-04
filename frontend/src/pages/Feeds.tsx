@@ -7,6 +7,9 @@ import { Status, toastHandler, type BlogType } from '@/lib/helper';
 import BlogCardSkeleton from '@/components/BlogCardSkeleton';
 import UserAcc from '@/components/UserAcc';
 import Logo from '@/components/Logo';
+import { CometCard } from '@/components/ui/comet-card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Sparkles } from 'lucide-react';
 
 const Feeds = () => {
   const navigate = useNavigate();
@@ -102,45 +105,27 @@ const Feeds = () => {
 
         {/* Aside Sidebar */}
         <aside className="hidden w-1/3 space-y-4 sm:block">
-          {/* Trending Topics */}
-          <div className="rounded-xl border p-4">
-            <h3 className="mb-3 text-lg font-semibold">📈 Trending Topics</h3>
-            <ul className="text-muted-foreground list-disc space-y-2 pl-5 text-sm">
-              <li>Web3 & Decentralization</li>
-              <li>AI & LLMs</li>
-              <li>TypeScript Tips</li>
-              <li>CSS Tricks in 2025</li>
-            </ul>
-          </div>
-
-          {/* Tags */}
-          <div className="rounded-xl border p-4">
-            <h3 className="mb-3 text-lg font-semibold">🏷️ Popular Tags</h3>
-            <div className="flex flex-wrap gap-2 text-sm">
-              {['#JavaScript', '#React', '#AI', '#Startups', '#Design'].map(
-                (tag, i) => (
-                  <span
-                    key={i}
-                    className="bg-muted text-muted-foreground hover:bg-accent cursor-pointer rounded-full px-3 py-1"
-                  >
-                    {tag}
-                  </span>
-                )
-              )}
-            </div>
-          </div>
-
-          {/* Suggested Users */}
-          <div className="rounded-xl border p-4">
-            <h3 className="mb-3 text-lg font-semibold">
-              👥 Suggested Creators
-            </h3>
-            <ul className="text-muted-foreground space-y-2 text-sm">
-              <li>@tech_with_tanmay</li>
-              <li>@frontendfox</li>
-              <li>@ai_architect</li>
-            </ul>
-          </div>
+          <CometCard className="p-10">
+            <Card className="border-muted-foreground bg-zinc-900 text-white shadow-lg">
+              <CardHeader className="flex items-center gap-2">
+                <Sparkles className="text-yellow-400" />
+                <CardTitle className="text-xl">AI Blog Generator</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-zinc-300">
+                  Instantly generate high-quality blog posts with the power of
+                  AI. Just give a topic — we handle the rest.
+                </p>
+                <Button
+                  variant="outline"
+                  className=""
+                  onClick={() => navigate('/blog/ai')}
+                >
+                  Generate Blog
+                </Button>
+              </CardContent>
+            </Card>
+          </CometCard>
         </aside>
       </main>
     </div>
