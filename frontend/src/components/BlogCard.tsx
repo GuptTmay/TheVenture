@@ -2,7 +2,7 @@ import Markdown from 'react-markdown';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Card, CardContent, CardHeader } from './ui/card';
 import { useNavigate } from 'react-router-dom';
-import { blogAgeFinder } from '@/lib/helper';
+import { ageFinder } from '@/lib/helper';
 import { useEffect, useState } from 'react';
 import { getBlogVotes } from '@/lib/api';
 
@@ -11,6 +11,7 @@ type BlogCardProps = {
   title: string;
   content: string;
   authorName: string;
+  authorId: string;
   updatedAt: string;
 };
 
@@ -19,6 +20,7 @@ const BlogCard = ({
   title,
   content,
   authorName,
+  authorId,
   updatedAt,
 }: BlogCardProps) => {
   const navigate = useNavigate();
@@ -50,11 +52,11 @@ const BlogCard = ({
         <CardHeader className="flex items-center gap-4">
           <Avatar className="bg-secondary size-7 ring ring-white/30">
             <AvatarImage
-              src={`https://api.dicebear.com/9.x/notionists/svg?seed=${authorName}&flip=false`}
+              src={`https://api.dicebear.com/9.x/notionists/svg?seed=${authorId}&flip=false`}
               alt={authorName}
             />
             <AvatarFallback className="text-xs font-semibold">
-              {authorName[0]}
+              {authorName[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <p className="text-foreground text-sm font-medium">{authorName}</p>
@@ -73,7 +75,7 @@ const BlogCard = ({
           </div>
 
           <div className="text-muted-foreground pt-2 text-sm">
-            🗳️ {votes ?? '...'} votes • {blogAgeFinder(updatedAt)}
+            🗳️ {votes ?? '...'} votes • {ageFinder(updatedAt)}
           </div>
         </CardContent>
       </Card>

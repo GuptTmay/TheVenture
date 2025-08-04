@@ -12,10 +12,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { createBlog } from '@/lib/api';
 import { toastHandler } from '@/lib/helper';
 import Logo from '@/components/Logo';
+import UserAcc from '@/components/UserAcc';
 
 const CreateBlogSchema = z.object({
   title: z
@@ -63,10 +63,7 @@ const CreateBlog = () => {
           >
             Generate Using AI
           </Button>
-          <Avatar className="bg-secondary size-10 cursor-pointer ring-2 ring-white/30 hover:scale-110 active:scale-105">
-            <AvatarImage src="https://api.dicebear.com/9.x/notionists/svg?seed=uuid&flip=true" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
+          <UserAcc />
         </div>
       </nav>
       <Form {...form}>

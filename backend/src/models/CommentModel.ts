@@ -12,9 +12,9 @@ export default class CommentModel {
       select: {
         content: true,
         createdAt: true,
-        userId: true,
         user: {
           select: {
+            id: true,
             name: true,
           },
         },
@@ -31,6 +31,16 @@ export default class CommentModel {
         userId: userId,
         blogId: blogId,
         content: content,
+      },
+      select: {
+        content: true,
+        createdAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }

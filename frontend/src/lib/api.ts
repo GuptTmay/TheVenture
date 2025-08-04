@@ -144,3 +144,27 @@ export const removeBlogVote = async (blogId: string) => {
     body: JSON.stringify({ blogId: blogId }),
   });
 };
+
+export const getBlogComments = async (blogId: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/blog/${blogId}/comments`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+export const createBlogComment = async (blogId: string, content: string) => {
+  const token = sessionStorage.getItem('token');
+
+  return await fetch(`${BASE_URL}/feeds/blog/${blogId}/comments`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ content: content }),
+  });
+};

@@ -19,4 +19,7 @@ blogRouter.get("/vote/:blogId", BlogController.checkIfVoted);
 blogRouter.post("/vote", BlogController.addBlogVote);
 blogRouter.delete("/vote", BlogController.removeBlogVote);
 
+blogRouter.get('/blog/:blogId/comments', BlogController.getBlogComments);
+blogRouter.post('/blog/:blogId/comments', BlogController.createBlogComment);
+
 export default blogRouter;

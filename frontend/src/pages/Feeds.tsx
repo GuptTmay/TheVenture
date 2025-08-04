@@ -1,16 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { PenLine } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import BlogCard from '@/components/BlogCard';
 import { useEffect, useState } from 'react';
 import { getAllBlogs } from '@/lib/api';
 import { useNavigate } from 'react-router-dom';
-import {
-  Status,
-  toastHandler,
-  type BlogType,
-} from '@/lib/helper';
+import { Status, toastHandler, type BlogType } from '@/lib/helper';
 import BlogCardSkeleton from '@/components/BlogCardSkeleton';
+import UserAcc from '@/components/UserAcc';
+import Logo from '@/components/Logo';
 
 const Feeds = () => {
   const navigate = useNavigate();
@@ -53,12 +49,7 @@ const Feeds = () => {
       {/* Header */}
 
       <nav className="sticky top-0 z-10 flex items-center justify-between border-b px-6 py-4 backdrop-blur-2xl">
-        <div className="flex items-end gap-2 text-2xl font-bold">
-          <PenLine className="text-primary size-8" />
-          <span className="from-primary to-primary/70 hidden bg-gradient-to-r bg-clip-text text-transparent sm:block">
-            The Venture
-          </span>
-        </div>
+        <Logo />
 
         <div className="flex items-center gap-2">
           <Button
@@ -69,10 +60,7 @@ const Feeds = () => {
           >
             Create Blog
           </Button>
-          <Avatar className="bg-secondary size-10 cursor-pointer ring-2 ring-white/30 hover:scale-110 active:scale-105">
-            <AvatarImage src="https://api.dicebear.com/9.x/notionists/svg?seed=uuid&flip=true" />
-            <AvatarFallback>U</AvatarFallback>
-          </Avatar>
+          <UserAcc />
         </div>
       </nav>
 
@@ -101,7 +89,8 @@ const Feeds = () => {
                   : blog.content.substring(0, 150) + '...'
               }
               authorName={blog.author.name || 'User'}
-              updatedAt={blog.updatedAt}  
+              authorId={blog.author.id}
+              updatedAt={blog.updatedAt}
             />
           ))}
 

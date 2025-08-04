@@ -12,6 +12,7 @@ export default class UserModel {
       },
       select: {
         id: true,
+        name: true,
       },
     });
   }
@@ -20,6 +21,11 @@ export default class UserModel {
     const data = await prisma.user.findUnique({
       where: {
         email,
+      },
+      select: {
+        id: true,
+        name: true,
+        password: true
       },
     });
     return data;

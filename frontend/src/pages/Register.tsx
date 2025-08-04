@@ -31,6 +31,8 @@ import { registerUser, sendOtp, verifyOtp } from '@/lib/api';
 import { Status, toastHandler } from '@/lib/helper';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useDispatch } from 'react-redux';
+import { addUserInfo } from '@/features/user/userSlice';
 
 const Register = () => {
   const RegisterStages = {
@@ -39,6 +41,7 @@ const Register = () => {
     INFO: 'info',
   };
 
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [hidePass, setHidePass] = useState(true);
@@ -51,7 +54,6 @@ const Register = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => setLoading(false), 1500);
 
     try {
       const res = await registerUser(name, password);
@@ -60,6 +62,7 @@ const Register = () => {
 
       if (res.ok) {
         sessionStorage.setItem('token', data.token);
+        dispatch(addUserInfo(data.user));
         navigate('/feeds');
       }
     } catch (err) {

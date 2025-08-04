@@ -24,10 +24,10 @@ import { changePassword, loginUser, sendOtp, verifyOtp } from '@/lib/api';
 import { Status, toastHandler } from '@/lib/helper';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useDispatch } from 'react-redux';
+import { addUserInfo } from '@/features/user/userSlice';
 
 const Login = () => {
-  const navigate = useNavigate();
-
   const ForgetPasswordStageStates = {
     DEFAULT: 'default',
     EMAIL: 'email',
@@ -35,6 +35,8 @@ const Login = () => {
     PASSWORD: 'PASSWORD',
   };
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [hidePass, setHidePass] = useState(true);
   const [email, setEmail] = useState('');
@@ -60,6 +62,8 @@ const Login = () => {
 
       if (res.ok) {
         sessionStorage.setItem('token', data.token);
+        console.log(data);
+        dispatch(addUserInfo(data.user));
         navigate('/feeds');
       }
     } catch (err) {
@@ -149,7 +153,6 @@ const Login = () => {
         <div className="bg-primary/10 animate-pulse-slow absolute -top-40 -left-20 h-96 w-96 rounded-full blur-3xl" />
         <div className="animate-pulse-slow absolute right-0 bottom-10 h-72 w-72 rounded-full bg-purple-400/10 blur-2xl" />
       </div>
-
 
       {/* Dot Background */}
       <div

@@ -2,21 +2,31 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { blogAgeFinder, Status, toastHandler } from '@/lib/helper';
+import {
+  ageFinder,
+  Status,
+  toastHandler,
+  type CommentType,
+} from '@/lib/helper';
 import {
   addBlogVote,
   checkIfVoted,
+  createBlogComment,
   getBlog,
+  getBlogComments,
   getBlogVotes,
   removeBlogVote,
 } from '@/lib/api';
-import { PenLine, ArrowLeft, Calendar, User, Heart } from 'lucide-react';
+import { ArrowLeft, Calendar, User, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
+import UserAcc from '@/components/UserAcc';
+import Logo from '@/components/Logo';
+import CommentCard from '@/components/CommentCard';
 
 type BlogData = {
   id: string;
@@ -36,10 +46,12 @@ const ReadBlog = () => {
   const [blog, setBlog] = useState<BlogData | null>(null);
   const [loadingState, setLoadingState] = useState<LoadingState>('loading');
   const [error, setError] = useState<string>('');
-
-  const handleGoBack = () => {
-    navigate('/feeds', { replace: false });
-  };
+  const [commentLoading, setCommentLoading] = useState<boolean>(false);
+  const [votes, setVotes] = useState<number>(0);
+  const [voted, setVoted] = useState<boolean>(false);
+  const [comments, setComments] = useState<CommentType[]>([]);
+  const [commentContent, setCommentContent] = useState<string>('');
+  const [isVoteLoading, setIsVoteLoading] = useState<boolean>(false);
 
   // Memoized blog fetching function
   const fetchBlog = useCallback(async (blogId: string) => {
@@ -63,7 +75,6 @@ const ReadBlog = () => {
         setLoadingState('error');
         toastHandler(Status.ERROR, errorMessage);
       } else {
-        console.log(data);
         setBlog(data.blogData);
         setVotes(voteData.voteCount);
         setVoted(votedData.hasVoted);
@@ -89,7 +100,25 @@ const ReadBlog = () => {
     fetchBlog(id);
   }, [id, fetchBlog, navigate]);
 
-  // Loading skeleton component
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (!id) return;
+
+      try {
+        const res = await getBlogComments(id);
+        const data = await res.json();
+        if (res.ok) {
+          setComments(data.comments);
+        }
+      } catch (error) {
+        console.error(error);
+        toastHandler(Status.ERROR, 'Failed to fetch comments! Try Again');
+      }
+    };
+
+    fetchComments();
+  }, [id]);
+
   const LoadingSkeleton = () => (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -136,13 +165,6 @@ const ReadBlog = () => {
     return Math.ceil(wordCount / wordsPerMinute);
   };
 
-  const [votes, setVotes] = useState<number>(0); // Replace with blog.likes if available
-  const [voted, setVoted] = useState<boolean>(false);
-  const [comments, setComments] = useState<string[]>([]);
-  const [commentInput, setCommentInput] = useState<string>('');
-  const [isVoteLoading, setIsVoteLoading] = useState<boolean>(false);
-
-
   const handleLikeToggle = useCallback(async () => {
     if (!id || isVoteLoading) return;
 
@@ -150,18 +172,15 @@ const ReadBlog = () => {
       setIsVoteLoading(true);
       const newVotedState = !voted;
 
-      // Optimistic update
       setVoted(newVotedState);
       setVotes((prev) => (newVotedState ? prev + 1 : prev - 1));
 
       if (newVotedState) {
         await addBlogVote(id);
-        // toastHandler(Status.SUCCESS, 'Thanks for liking this post!');
       } else {
         await removeBlogVote(id);
       }
     } catch (error) {
-      // Revert optimistic update on error
       setVoted(voted);
       setVotes((prev) => (voted ? prev + 1 : prev - 1));
       toastHandler(Status.ERROR, 'Failed to update vote. Please try again.');
@@ -171,27 +190,39 @@ const ReadBlog = () => {
     }
   }, [id, voted, isVoteLoading]);
 
-  const handleAddComment = () => {
-    if (!commentInput.trim()) return;
-    setComments((prev) => [...prev, commentInput.trim()]);
-    setCommentInput('');
-    // TODO: Call API to save comment
+  const handleAddComment = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!commentContent.trim()) return;
+    if (!blog || !id) return;
+    setCommentLoading(true);
+
+    try {
+      const res = await createBlogComment(id, commentContent.trim());
+      const data = await res.json();
+      console.log(data);
+      if (res.ok) {
+        console.log(data.comment);
+        setComments((prev) => [data.comment, ...prev]);
+        setCommentContent('');
+      }
+    } catch (error) {
+      console.error(error);
+      toastHandler(Status.ERROR, 'Failed to comment. Please try again.');
+    } finally {
+      setCommentLoading(false);
+    }
   };
 
   return (
     <div className="from-background to-muted/20 min-h-screen bg-gradient-to-br">
       {/* Enhanced Header */}
       <nav className="bg-background/80 sticky top-0 z-10 flex items-center justify-between border-b px-4 py-4 backdrop-blur-md">
-        <div className="flex items-end gap-2 text-2xl font-bold">
-          <PenLine className="text-primary size-8" />
-          <span className="from-primary to-primary/70 hidden bg-gradient-to-r bg-clip-text text-transparent sm:block">
-            The Venture
-          </span>
-        </div>
+        <Logo />
 
         <div className="flex items-center gap-3">
           <Button
-            onClick={handleGoBack}
+            onClick={() => navigate('/feeds')}
             variant="outline"
             size="sm"
             className="flex items-center gap-2"
@@ -200,17 +231,7 @@ const ReadBlog = () => {
             <span className="hidden sm:inline">Go Back</span>
           </Button>
 
-          {blog && (
-            <Avatar className="bg-secondary ring-primary/20 size-10 ring-2 transition-transform hover:scale-110">
-              <AvatarImage
-                src={`https://api.dicebear.com/9.x/notionists/svg?seed=uuid&flip=true`}
-                alt={`uuid's avatar`}
-              />
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {blog.author.name[0]?.toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-          )}
+          <UserAcc />
         </div>
       </nav>
 
@@ -251,7 +272,7 @@ const ReadBlog = () => {
                     <div className="text-muted-foreground flex items-center gap-4 text-sm">
                       <div className="flex items-center gap-1">
                         <Calendar className="size-4" />
-                        <span>{blogAgeFinder(blog.updatedAt)}</span>
+                        <span>{ageFinder(blog.updatedAt)}</span>
                       </div>
 
                       {blog.content && (
@@ -347,7 +368,7 @@ const ReadBlog = () => {
                     </Button>
 
                     <Button
-                      onClick={handleGoBack}
+                      onClick={() => navigate('/feeds')}
                       variant="ghost"
                       size="sm"
                       className="flex items-center gap-2"
@@ -361,18 +382,19 @@ const ReadBlog = () => {
                   <div className="space-y-4">
                     <h3 className="text-lg font-semibold">Comments</h3>
 
-                    <div className="flex gap-2">
+                    <form className="flex gap-2" onSubmit={handleAddComment}>
                       <input
                         type="text"
-                        className="flex-1 rounded border px-3 py-1 text-sm"
+                        className="w-full flex-1 rounded border px-3 py-1 text-sm"
                         placeholder="Add a comment..."
-                        value={commentInput}
-                        onChange={(e) => setCommentInput(e.target.value)}
+                        value={commentContent}
+                        disabled={commentLoading}
+                        onChange={(e) => setCommentContent(e.target.value)}
                       />
-                      <Button onClick={handleAddComment} size="sm">
+                      <Button type="submit" size="sm">
                         Post
                       </Button>
-                    </div>
+                    </form>
 
                     <ul className="space-y-2">
                       {comments.length === 0 && (
@@ -381,12 +403,16 @@ const ReadBlog = () => {
                         </li>
                       )}
                       {comments.map((comment, i) => (
-                        <li
-                          key={i}
-                          className="bg-muted/30 text-foreground rounded px-3 py-2 text-sm"
-                        >
-                          {comment}
-                        </li>
+                        <>
+                          {console.log(comment)}
+                          <CommentCard
+                            key={i}
+                            authorId={comment.user.id}
+                            authorName={comment.user.name ?? 'Anonymous'}
+                            content={comment.content}
+                            createdAt={comment.createdAt}
+                          />
+                        </>
                       ))}
                     </ul>
                   </div>

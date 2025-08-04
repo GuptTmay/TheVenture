@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
+import UserAcc from '@/components/UserAcc';
 
 const CreateAiBlogSchema = z.object({
   topic: z
@@ -72,16 +73,7 @@ const AiBlog = () => {
             <ArrowLeft className="size-4" />
             <span className="hidden sm:inline">Go Back</span>
           </Button>
-
-          {/* <Avatar className="bg-secondary ring-primary/20 size-10 ring-2 transition-transform hover:scale-110">
-            <AvatarImage
-              src={`https://api.dicebear.com/9.x/notionists/svg?seed=${blog.author.id}&flip=true`}
-              alt={`${blog.author.name}'s avatar`}
-            />
-            <AvatarFallback className="bg-primary text-primary-foreground">
-              {blog.author.name[0]?.toUpperCase()}
-            </AvatarFallback>
-          </Avatar> */}
+          <UserAcc />
         </div>
       </nav>
       <Form {...form}>

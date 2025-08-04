@@ -47,6 +47,10 @@ export default class AuthController {
             token: token,
             message: "Authentication Successfull!!",
             status: Status.SUCCESS,
+            user: {
+              id: data.id,
+              name: data.name,
+            },
           });
         }
 
@@ -57,12 +61,13 @@ export default class AuthController {
 
       const hashpass = await bcrypt.hash(req.body.password, salt_rounds);
 
-      let id = await userModel.createUser(
+      let userData = await userModel.createUser(
         req.body.name,
         req.user.email,
         hashpass
       );
-      const token = jwt.sign({ id: id }, JWT.SECRET_KEY, {
+
+      const token = jwt.sign({ id: userData.id }, JWT.SECRET_KEY, {
         expiresIn: JWT.TOKEN_EXP,
       });
 
@@ -70,6 +75,7 @@ export default class AuthController {
         token,
         message: "Registeration Successfull!!",
         status: Status.SUCCESS,
+        user: userData,
       });
     } catch (error) {
       console.error("Register User Error: ", error);
@@ -103,6 +109,10 @@ export default class AuthController {
         token: token,
         message: "Authentication Successfull",
         status: Status.SUCCESS,
+        user: {
+          id: data.id,
+          name: data.name,
+        },
       });
     } catch (error) {
       console.error("LogIn User Error: ", error);
@@ -156,18 +166,6 @@ export default class AuthController {
         .json({ message: "Invalid/Incorrect OTP", status: Status.ERROR });
     }
 
-    /*
-      # Removed in favor of making compatible for register route
-    const userData = await userModel.checkUser(email);
-    
-    if (!userData) {
-      return res.status(404).json({
-        message: "User Does't exist! Register Please",
-        status: Status.ERROR,
-      });
-    }
-    */ 
-    
     const token = jwt.sign({ email: email }, JWT.SECRET_KEY, {
       expiresIn: 30,
     });

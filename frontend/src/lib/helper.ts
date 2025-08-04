@@ -30,7 +30,7 @@ export function toastHandler(status: StatusType, message: string) {
   }
 }
 
-export function blogAgeFinder(updateDate: string) {
+export function ageFinder(updateDate: string) {
   const ageInMs = Date.now() - Date.parse(updateDate);
 
   const ageInSecs = Math.floor(ageInMs / 1000);
@@ -66,6 +66,16 @@ export type BlogType = {
   content: string;
   updatedAt: string;
   author: {
+    id: string;
     name: string;
   };
+};
+
+export type CommentType = {
+  user: {
+    id: string;
+    name: string | null;
+  };
+  content: string;
+  createdAt: string;
 };

@@ -211,6 +211,19 @@ export default class BlogController {
     }
   }
 
+  static async getBlogComments(req: Request, res: Response) {
+    try {
+      const blogId = req.params["blogId"];
+      const comments = await commentModel.getComments(blogId);
+      res.status(200).json({ comments: comments });
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .json({ message: "Something Went Wrong!", status: Status.ERROR });
+    }
+  }
+
   static async createBlogComment(req: Request, res: Response) {
     try {
       const blogId = req.params["blogId"];
@@ -230,19 +243,6 @@ export default class BlogController {
         message: "Comment Created!",
         status: Status.SUCCESS,
       });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(500)
-        .json({ message: "Something Went Wrong!", status: Status.ERROR });
-    }
-  }
-
-  static async getBlogComments(req: Request, res: Response) {
-    try {
-      const blogId = req.params["blogId"];
-      const comments = await commentModel.getComments(blogId);
-      res.status(200).json({ comments: comments });
     } catch (error) {
       console.error(error);
       res

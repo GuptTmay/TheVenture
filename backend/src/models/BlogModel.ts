@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { withAccelerate } from "@prisma/extension-accelerate";
-import { includes } from "zod";
 
 const prisma = new PrismaClient().$extends(withAccelerate());
 
@@ -17,6 +16,7 @@ export default class BlogModel {
         updatedAt: true,
         author: {
           select: {
+            id: true,
             name: true,
           },
         },
