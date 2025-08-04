@@ -19,7 +19,6 @@ export const UserBlog = () => {
       setLoading(true);
       const data = await getUserBlogs();
       const res = await data.json();
-      console.log(res);
       if (!res.blogs) {
         toastHandler(res.status, res.message);
       } else {

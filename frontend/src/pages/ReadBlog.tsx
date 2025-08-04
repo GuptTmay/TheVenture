@@ -199,9 +199,7 @@ const ReadBlog = () => {
     try {
       const res = await createBlogComment(id, commentContent.trim());
       const data = await res.json();
-      console.log(data);
       if (res.ok) {
-        console.log(data.comment);
         setComments((prev) => [data.comment, ...prev]);
         setCommentContent('');
       }
@@ -390,7 +388,6 @@ const ReadBlog = () => {
                       )}
                       {comments.map((comment, i) => (
                         <>
-                          {console.log(comment)}
                           <CommentCard
                             key={i}
                             authorId={comment.user.id}

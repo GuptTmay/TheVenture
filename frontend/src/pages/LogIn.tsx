@@ -62,7 +62,6 @@ const Login = () => {
 
       if (res.ok) {
         sessionStorage.setItem('token', data.token);
-        console.log(data);
         dispatch(addUserInfo(data.user));
         navigate('/feeds');
       }
