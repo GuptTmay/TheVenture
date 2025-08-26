@@ -1,5 +1,5 @@
 # TheVenture
-A blogging website made for people who want to go on an adventure.
+A blogging website made for people who want to go on an adventure.  
 Demo: https://the-venture.vercel.app/
 
 ## Demo Account
