@@ -10,6 +10,11 @@ A blogging website made for people who want to go on an adventure.
 - Redis DB
 
 ## Demo 
-Link: https://the-venture.vercel.app/  
+Link: https://theventure-tg3.vercel.app/  
 Email: demo@gmail.com  
 Password: 123123
+
+> **Warning**  
+> Its possible it would take multiple attemps to login/register.  
+> As their is not much traffic so backend would need sometime(1-2 minutes) to get started.
+
