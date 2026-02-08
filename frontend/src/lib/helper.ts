@@ -31,34 +31,31 @@ export function toastHandler(status: StatusType, message: string) {
 }
 
 export function ageFinder(updateDate: string) {
-  const ageInMs = Date.now() - Date.parse(updateDate);
+  const ts = Date.parse(updateDate);
+  if (isNaN(ts)) return "Invalid date";
 
-  const ageInSecs = Math.floor(ageInMs / 1000);
-  const ageInMinutes = Math.floor(ageInMs / (1000 * 60));
-  const ageInHours = Math.floor(ageInMs / (1000 * 60 * 60));
-  const ageInDays = Math.floor(ageInMs / (1000 * 60 * 60 * 24));
-  const ageInWeeks = Math.floor(ageInMs / (1000 * 60 * 60 * 24 * 7));
-  const ageInYears = Math.floor(ageInMs / (1000 * 60 * 60 * 24 * 364));
+  let diff = Date.now() - ts;
+  if (diff < 0) return "Just now";
 
-  if (ageInSecs < 60) {
-    return ageInSecs + ' Secs ago';
-  } else if (ageInMinutes < 60) {
-    if (ageInMinutes === 1) return ageInMinutes + ' Min ago';
-    return ageInMinutes + ' Mins ago';
-  } else if (ageInHours < 24) {
-    if (ageInHours == 1) return ageInHours + ' Hour ago';
-    return ageInHours + ' Hours ago';
-  } else if (ageInDays < 7) {
-    if (ageInDays == 1) return ageInDays + ' Day ago';
-    return ageInDays + ' Days ago';
-  } else if (ageInWeeks < 5) {
-    if (ageInWeeks === 1) return ageInWeeks + ' Week ago';
-    return ageInWeeks + ' Week ago';
-  } else {
-    if (ageInYears == 1) return ageInYears + ' Year ago';
-    return ageInYears + ' Years ago';
+  const units = [
+    { label: "Year", ms: 1000 * 60 * 60 * 24 * 365 },
+    { label: "Week", ms: 1000 * 60 * 60 * 24 * 7 },
+    { label: "Day", ms: 1000 * 60 * 60 * 24 },
+    { label: "Hour", ms: 1000 * 60 * 60 },
+    { label: "Min", ms: 1000 * 60 },
+    { label: "Sec", ms: 1000 },
+  ];
+
+  for (const u of units) {
+    const val = Math.floor(diff / u.ms);
+    if (val >= 1) {
+      return `${val} ${u.label}${val > 1 ? "s" : ""} ago`;
+    }
   }
+
+  return "Just now";
 }
+
 
 export type BlogType = {
   id: string;
