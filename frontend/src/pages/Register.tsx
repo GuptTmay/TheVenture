@@ -212,7 +212,17 @@ const Register = () => {
                   </Button>
                 </form>
               </CardContent>
-              <CardFooter>
+              <CardFooter className='flex flex-col items-start'>
+                <CardDescription>
+                  Login via Demo Account
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => navigate('/login')}
+                  >
+                    Here 
+                  </Button>
+                </CardDescription>
                 <CardDescription>
                   Already a Venturer?
                   <Button
@@ -220,7 +230,7 @@ const Register = () => {
                     size="sm"
                     onClick={() => navigate('/login')}
                   >
-                    Log In
+                    Login
                   </Button>
                 </CardDescription>
               </CardFooter>

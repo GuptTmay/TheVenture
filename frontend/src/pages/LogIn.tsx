@@ -39,8 +39,8 @@ const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [hidePass, setHidePass] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('demo@gmail.com');
+  const [password, setPassword] = useState('123123');
   const [otp, setOtp] = useState('');
   const [forgotPasswordStage, setForgotPasswordStage] = useState(
     ForgetPasswordStageStates.DEFAULT
