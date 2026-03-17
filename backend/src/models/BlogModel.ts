@@ -21,7 +21,7 @@ export default class BlogModel {
           },
         },
       },
-      cacheStrategy: { ttl: 60, swr: 30 },
+      cacheStrategy: { ttl: 0 },
     });
   }
 
@@ -101,6 +101,9 @@ export default class BlogModel {
             name: true,
           },
         },
+      },
+      cacheStrategy: {
+        ttl: 0, // no caching
       },
     });
   }
