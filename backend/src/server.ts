@@ -9,6 +9,11 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
+
+app.get("/test", (req, res) => {
+  res.send("Hell World!");
+});
+
 app.use(
   cors({
     origin: FRONTEND_URL,
@@ -16,9 +21,6 @@ app.use(
   })
 );
 
-app.get("/test", (req, res) => {
-  res.send("Hell World!");
-});
 
 app.use(`${API_PREFIX}/auth`, authRouter);
 app.use(`${API_PREFIX}/feeds`, blogRouter);
