@@ -2,37 +2,62 @@ import { BotMail } from "./config";
 import nodemailer from "nodemailer";
 import { GoogleGenAI, Type } from "@google/genai";
 
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_API_KEY,
 });
 
+// export async function sendOtp(email: string) {
+//   const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     host: "smtp.gmail.com",
+//     port: 465,
+//     secure: true,
+//     auth: {
+//       user: BotMail.user,
+//       pass: BotMail.pass,
+//     },
+//   });
+
+//   await transporter.sendMail({
+//     from: `"The Venture" <${BotMail.user}>`,
+//     to: email,
+//     subject: "Verification OTP",
+//     text: `Your OTP is: ${otp}`,
+//     html: `
+//     <div style="font-family: Arial, sans-serif; padding: 10px;">
+//       <h2>Hello, User</h2>
+//       <p>Your OTP is:</p>
+//       <h1 style="color: #4CAF50;">${otp}</h1>
+//       <p>This OTP is valid for 30 Seconds.</p>
+//     </div>
+//   `,
+//   });
+
+//   return otp;
+// }
+
 export async function sendOtp(email: string) {
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true,
-    auth: {
-      user: BotMail.user,
-      pass: BotMail.pass,
-    },
-  });
-
-  await transporter.sendMail({
-    from: `"The Venture" <${BotMail.user}>`,
+  await resend.emails.send({
+    // from: "onboarding@resend.dev",
+    from: 'The Venture <onboarding@resend.dev>', // Use your verified domain here later
     to: email,
     subject: "Verification OTP",
-    text: `Your OTP is: ${otp}`,
     html: `
-    <div style="font-family: Arial, sans-serif; padding: 10px;">
-      <h2>Hello, User</h2>
-      <p>Your OTP is:</p>
-      <h1 style="color: #4CAF50;">${otp}</h1>
-      <p>This OTP is valid for 30 Seconds.</p>
-    </div>
-  `,
+        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee;">
+          <h2 style="color: #333;">Hello!</h2>
+          <p>Your verification code is:</p>
+          <h1 style="color: #4CAF50; letter-spacing: 5px;">${otp}</h1>
+          <p style="color: #666; font-size: 12px;">This OTP is valid for 5 minutes.</p>
+        </div>
+      `,
   });
 
   return otp;
