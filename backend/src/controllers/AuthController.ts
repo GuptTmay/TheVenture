@@ -123,28 +123,37 @@ export default class AuthController {
   }
 
   static async sendOtp(req: Request, res: Response) {
-    const email = req.body.email;
+    try {
+      const email = req.body.email;
+      console.log("Received email for OTP: ", email); // Log the received email for debugging
+      if (typeof email !== "string") {
+        return res
+          .status(400)
+          .json({ message: "Invalid email", status: Status.ERROR });
+      }
 
-    if (typeof email !== "string") {
+      const otpKey = `otp:${email}`;
+      const ttl = await redisClient.ttl(otpKey);
+
+      if (ttl > 0) {
+        return res.status(409).json({
+          message: `Wait ${ttl} seconds for the OTP to expire`,
+          status: Status.INFO,
+        });
+      }
+
+      const otp = await sendOtp(email);
+      console.log("Generated OTP: ", otp); // Log the generated OTP for debugging
+      await redisClient.set(otpKey, otp, { EX: 30 });
+
+      return res.status(200).json({ message: "OTP Sent!", status: Status.INFO });
+    }
+    catch (error) {
+      console.error("Send OTP Error: ", error);
       return res
-        .status(400)
-        .json({ message: "Invalid email", status: Status.ERROR });
+        .status(500)
+        .json({ message: "Some thing went wrong", status: Status.ERROR, error: error instanceof Error ? error.message : String(error) });
     }
-
-    const otpKey = `otp:${email}`;
-    const ttl = await redisClient.ttl(otpKey);
-
-    if (ttl > 0) {
-      return res.status(409).json({
-        message: `Wait ${ttl} seconds for the OTP to expire`,
-        status: Status.INFO,
-      });
-    }
-
-    const otp = await sendOtp(email);
-    await redisClient.set(otpKey, otp, { EX: 30 });
-
-    return res.status(200).json({ message: "OTP Sent!", status: Status.INFO });
   }
 
   static async verifyOtp(req: Request, res: Response) {
