@@ -4,14 +4,20 @@ import { API_PREFIX, FRONTEND_URL } from "./config";
 import blogRouter from "./routes/BlogRouter";
 import cors from "cors";
 import userRouter from "./routes/UserRouter";
+import UserModel from "./models/UserModel";
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-app.get("/test", (req, res) => {
-  res.send("Hell World!");
+app.get("/test", async (req, res) => {
+  const userModel = new UserModel();
+  const response = await userModel.checkUser("demo@gmail.com");
+  res.json({
+    "task": "keeping db and server alive.",
+    "fetch_user_info": response  
+  });
 });
 
 app.use(
