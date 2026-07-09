@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
+// import { withAccelerate } from "@prisma/extension-accelerate";
 
-const prisma = new PrismaClient().$extends(withAccelerate());
+// const prisma = new PrismaClient().$extends(withAccelerate());
+const prisma = new PrismaClient()
 
 export default class BlogModel {
   async getBlogs() {
@@ -21,7 +22,6 @@ export default class BlogModel {
           },
         },
       },
-      cacheStrategy: { ttl: 0 },
     });
   }
 
@@ -101,9 +101,6 @@ export default class BlogModel {
             name: true,
           },
         },
-      },
-      cacheStrategy: {
-        ttl: 0, // no caching
       },
     });
   }
